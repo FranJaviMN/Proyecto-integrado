@@ -134,5 +134,5 @@ Si queremos saber mas acerca de **Podman** podemos seguir los post que tengo en 
 
 ### Crando nuestro primer pod
 
-Una vez hemos visto como crear contenedores y todo lo relacionado con ello mediante **Podman**, debemos de recordar que este nos daba la opción de poder crear tambien pods, por lo que vamos a empezar a crearlos para ir viendo como funcionan estos con podmanz
+Una vez hemos visto como crear contenedores y todo lo relacionado con ello mediante **Podman**, debemos de recordar que este nos daba la opción de poder crear tambien pods, por lo que vamos a empezar a crearlos para ir viendo como funcionan estos con podman
 
