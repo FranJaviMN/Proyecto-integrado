@@ -130,7 +130,59 @@ Si queremos saber mas acerca de **Podman** podemos seguir los post que tengo en 
 
 * Almacenamiento en Docker: https://franjavimn.onrender.com/implantacion/almacenamiento-docker/
 
-### Crando nuestro primer pod
+## Pods con Podman
 
-Una vez hemos visto como crear contenedores y todo lo relacionado con ello mediante **Podman**, debemos de recordar que este nos daba la opción de poder crear tambien pods, por lo que vamos a empezar a crearlos para ir viendo como funcionan estos con podman
+### ¿Qué es un Pod?
+
+Antes de empezar vamos a ver que es un pod.
+
+Debemos de tener en cuneta que los pods es un concepto que introdució Kubernetes pero el concepto en Podman es muy similar al que maneja Kubernetes. Un Pod (como en una vaina de ballenas o vaina de guisantes) es un grupo de uno o más contenedores (como contenedores Docker o Podman), con almacenamiento/red compartidos, y unas especificaciones de cómo ejecutar los contenedores. Los contenidos de un Pod son siempre coubicados, coprogramados y ejecutados en un contexto compartido y este contiene uno o más contenedores de aplicaciones relativamente entrelazados.
+
+El contexto compartido de un Pod es un conjunto de namespaces de Linux, cgroups y, potencialmente, otras facetas de aislamiento, las mismas cosas que aíslan un contenedor Docker o Podman. Dentro del contexto de un Pod, las aplicaciones individuales pueden tener más subaislamientos aplicados. Los contenedores dentro de un Pod comparten dirección IP y puerto, y pueden encontrarse a través de localhost. También pueden comunicarse entre sí mediante comunicaciones estándar entre procesos. Los contenedores en diferentes Pods tienen direcciones IP distintas y no pueden comunicarse por IPC sin configuración especial. Estos contenedores normalmente se comunican entre sí a través de las direcciones IP del Pod.
+
+En términos de Docker, un Pod se modela como un grupo de contenedores de Docker con namespaces y volúmenes de sistemas de archivos compartidos.
+
+![Imagen de un pod](https://raw.githubusercontent.com/FranJaviMN/elementos-grado/a7c12c4da2fedd5e8a4c7f5bd9ddc2b01dab9774/Proyecto/pod.svg)
+
+Un Pod de múltiples contenedores que contiene un extractor de archivos y un servidor web que utiliza un volumen persistente para el almacenamiento compartido entre los contenedores.
+
+## Concepto de pod en Podman
+
+Ahora, si hablamos de los Pods en Podman los cuales, son similares al concepto que tiene Kubernetes sobre estos, podemos fijarnos en este esquema:
+
+![Pods en podman](https://raw.githubusercontent.com/FranJaviMN/elementos-grado/main/Proyecto/podman-pod-architecture.png)
+
+Todos los pods que vamos a crear con Podman vamos a tener un container "*Infra*". Este contenedor no hace nada. El proposito es el de sostener los *namespaces* asociados en el pod y permite que podman conecte con otros contenedores del pod. Esto le permite iniciar y detener contenedores dentro del pod y el pod seguirá funcionando donde, si el contenedor primario controlara el pod, esto no sería posible. Por defecto, el contenedor "*infra*" esta basado en la imagen **k8s.gcr.io/pause**. A menos que diga explícitamente lo contrario, todos los pods tendrán un contenedor basado en la imagen predeterminada.
+
+
+### Creando nuestro primer pod
+
+Para ello lo que vamos a hacer es crear un pod en nuestra maquina de pruebas con Vagrant que habiamos creado anteriormente.
+
+Para ello vamos a tener la siguiente guia sobre los comandos:
+```shell
+#### Comando por defecto para tratar con pods en podman ####
+
+podman pod - Gestiona los pods.
+
+Los pods son un grupo de uno o varios contenedores compartiendo la misma red, PID y espacio de nombres.
+
+USO:
+  podman pod comando [comando opciones] [argumentos...]
+
+COMANDOS:
+  create        Crea un nuevo pod vacio.
+  exists        Comprueba si el pod existe
+  inspect       Saca por pantalla la información acerca del pod
+  kill          Envia una señal "kill" al pod
+  pause         Pausa uno o mas pods
+  ps, ls, list  Lista los pods 
+  restart       Reinicia uno o mas pods
+  rm            Elimina uno o mas pods
+  start         Inicia uno o mas pods
+  stats         Saca por pantalla el consumo de CPU, memory, network I/O, block I/O and PIDs de los contenedores en uno o mas pods
+  stop          Para uno o mas pods
+  top           muestra por pantalla los procesos de los contenedores en un pod
+  unpause       Quita de pausa uno o mas pods
+
 
