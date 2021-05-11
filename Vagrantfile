@@ -9,7 +9,6 @@ Vagrant.configure("2") do |podman|
     libvirt.uri = 'qemu+unix:///system'
     libvirt.host = "podman"
     libvirt.cpus = 1
-    libvirt.memory = 512
+    libvirt.memory = 1024
   end
 end
-
