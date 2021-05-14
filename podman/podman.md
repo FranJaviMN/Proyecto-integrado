@@ -155,9 +155,7 @@ Ahora, si hablamos de los Pods en Podman los cuales, son similares al concepto q
 Todos los pods que vamos a crear con Podman vamos a tener un container "*Infra*". Este contenedor no hace nada. El proposito es el de sostener los *namespaces* asociados en el pod y permite que podman conecte con otros contenedores del pod. Esto le permite iniciar y detener contenedores dentro del pod y el pod seguirá funcionando donde, si el contenedor primario controlara el pod, esto no sería posible. Por defecto, el contenedor "*infra*" esta basado en la imagen **k8s.gcr.io/pause**. A menos que diga explícitamente lo contrario, todos los pods tendrán un contenedor basado en la imagen predeterminada.
 
 
-### Creando nuestro primer pod
-
-Para ello lo que vamos a hacer es crear un pod en nuestra maquina de pruebas con Vagrant que habiamos creado anteriormente.
+## CLI: podman pod
 
 Para ello vamos a tener la siguiente guia sobre los comandos:
 ```shell
@@ -185,4 +183,88 @@ COMANDOS:
   top           muestra por pantalla los procesos de los contenedores en un pod
   unpause       Quita de pausa uno o mas pods
 
+OPCIONES:
+  --help, -h Muestra las opciones de los comandos. Ej: podman pod create --help
+```
 
+### Creación de pods
+
+La manera mas sencilla que tenemos con podman para crear un pod, como hemos visto en los comandos anteriores, es usando **podman pod create**:
+```shell
+
+#### Comando para la creación de pods ####
+
+podman pod create - Crea un nuevo pod vacio
+
+USO: 
+  podman pod create [comando opciones] [argumentos...]
+
+OPCIONES:
+  --cgroup-parent [value]      Set parent cgroup for the pod
+  --infra                    Crea un contenedor infra en el nuevo pod
+  --infra-command [value]      Comando que se va a ejecutar en el contenedor infra cuando el pod se inicie (default: "/pause")
+  --infra-image [value]        Le indicamos cual es la imagen del contendor "infra" que va a usar (Por defecto: "k8s.gcr.io/pause:3.1")
+  --label [value], -l [value]    Fija los metadatos en el pod (default [])
+  --label-file [value]         Lee en un archivo las etiquetas delimitadas por lineas (default [])
+  --name [value], -n [value]     Asigan un nombre al contenedor, si no se le añade, le da uno aleatorio
+  --pod-id-file [value]        Inyecta el ID del pod en un fichero
+  --publish [value], -p [value]  Indicamos puertos o un rango de puertos en el host (default [])
+  --share [value]              Una lista de los namespaces que el pod va a usar, separado por comas (default: "cgroup,ipc,net,uts")
+```
+
+Ahora que hemos visto un poco las opciones que ofrece podman para crear pods, vamos a empezar por lo mas basico que es la creacion de un pod "vacio" para ir viendo todo lo que podemos ir haciendo con este pod.
+
+Lo primero que debemos de hacer es crear el pod, que le vamos a da un nombre concreto, para ello vamos a usar el siguiente comando:
+```shell
+#### Creamos el pod con el nombre "pod_prueba" ####
+vagrant@podman:~$ podman pod create --name pod_prueba
+b11f104a9e60af2339f297cd33ba008239b3c4c8e91ba041a61386b35ecf968d
+```
+
+Como vemos, al crear tambien nos saca por pantalla el id de ese pod que tambien podriamos usar a parte del nombre que le hemos pues al pod. Ahora mismo este pod que hemos creado esta vacio y, como hemos visto anteriormente, solo contiene el contenedor "infra":
+```shell
+#### Listamos los pods que tenemos creados  ####
+vagrant@podman:~$ podman pod list
+POD ID        NAME        STATUS   CREATED         INFRA ID      # OF CONTAINERS
+b11f104a9e60  pod_prueba  Created  35 seconds ago  50747b98c542  1
+
+#### Comprobamos los contenedores que tenemos dentro del pod ####
+vagrant@podman:~$ podman ps -a --pod
+CONTAINER ID  IMAGE                 COMMAND  CREATED         STATUS   PORTS   NAMES               POD ID        PODNAME
+50747b98c542  k8s.gcr.io/pause:3.2           52 seconds ago  Created          b11f104a9e60-infra  b11f104a9e60  pod_prueba
+```
+
+### Añadir nuevos contenedores a un Pod
+
+Visto la creacion de un pod "vacio" ahora vamos a proceder a añadir un contenedor a este pod, para ello debemos de tener claro a que pod vamos a agregar el nuevo contenedor por lo que, o bien usamos el id del pod o usamos su nombre.
+
+En estos ejemplos vamos a añadir un nuevo contenedor que va a correr con una imagen de debian 10 y como proceso va a correr un "top" y un "ls":
+```shell
+#### Creamos un contenedor en el pod de "prueba_pod ####
+vagrant@podman:~$ podman run -dt --pod b11f104a9e60 docker.io/library/alpine:latest top
+2a67924007260c8f663fda6bd7734b098e317774b6f59fa2e57cadef9b48ab01
+
+#### Listamos los contenedores del pod ####
+vagrant@podman:~$ podman ps -a --pod
+CONTAINER ID  IMAGE                            COMMAND  CREATED             STATUS                    PORTS   NAMES                 POD ID        PODNAME
+50747b98c542  k8s.gcr.io/pause:3.2                      About a minute ago  Up 18 seconds ago                 b11f104a9e60-infra    b11f104a9e60  pod_prueba
+2a6792400726  docker.io/library/alpine:latest  top      18 seconds ago      Up 17 seconds ago                 recursing_pascal      b11f104a9e60  pod_prueba
+```
+
+Como vemos tenemos el nuevo contenedor en el pod, con un nombre aleatorio y se esta ejecutando el comando top, que nos muestra los procesos y carga de la maquina por lo que el contenedor se va a quedar levantado hasta que yo le diga lo contrario.
+
+En cambio si lanzamos un contenedor en el pod que solo ejecute un "ls" veremos que al instante el contenedor se para y ya no esta en funcionamiento porque los contenedores solo ejecutan un proceso, cuando este termina, el contenedor tambien:
+```shell
+#### Creamos un contenedor con debian y ejecutamos "ls" ####
+vagrant@podman:~$ podman run -dt --pod b11f104a9e60 docker.io/library/debian:latest ls
+3a6171279b402b588a952f277a8e19efab390c0b39441742f9c0b09e9626ce54
+
+#### Comprobamos los contenedores de pod ####
+vagrant@podman:~$ podman ps -a --pod
+CONTAINER ID  IMAGE                            COMMAND  CREATED             STATUS                    PORTS   NAMES                 POD ID        PODNAME
+50747b98c542  k8s.gcr.io/pause:3.2                      About a minute ago  Up 18 seconds ago                 b11f104a9e60-infra    b11f104a9e60  pod_prueba
+2a6792400726  docker.io/library/alpine:latest  top      18 seconds ago      Up 17 seconds ago                 recursing_pascal      b11f104a9e60  pod_prueba
+3a6171279b40  docker.io/library/debian:latest  ls       3 seconds ago       Exited (0) 3 seconds ago          ecstatic_stonebraker  b11f104a9e60  pod_prueba
+```
+
+Como vemos, se ha creado y al tiempo de terminar el proceso de ls, este contenedor se ha parado.
