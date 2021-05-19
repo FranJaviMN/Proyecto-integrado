@@ -309,3 +309,5 @@ Ahora que hemos visto como crear pods y la forma de poder agregar a estos distin
 
   * En nuestro segundo ejemplo vamos a crear nuestra propia imagen haciendo uso de buildah y con ella vamos a crear, al igual que en el anterior ejemplo, un escenario con dos contenedores en un pod.
   ```shell
+  #### Creamos un nuevo pod llamado bookmedik ####
+  vagrant@podman:~$ podman pod create --name bookmedik -p 8081:80

@@ -17,4 +17,7 @@
   
   #### Generamos el fichero .yaml para kubernetes ####
   vagrant@podman:~$ podman generate kube servidor-wp >> escenario-wp.yaml
+
+  #### Ejecutamos el fichero .yaml para el escenario ####
+  vagrant@podman:~$ podman play kube ./escenario-wp.yaml
 ```
