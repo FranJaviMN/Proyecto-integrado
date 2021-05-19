@@ -6,7 +6,7 @@ RUN rm /var/www/html/index.html
 ENV APACHE_SERVER_NAME=www.bookmedik-francisco.org
 ENV DATABASE_USER=bookmedik
 ENV DATABASE_PASSWORD=bookmedik
-ENV DATABASE_HOST=db
+ENV DATABASE_HOST=127.0.0.1
 
 EXPOSE 80
 

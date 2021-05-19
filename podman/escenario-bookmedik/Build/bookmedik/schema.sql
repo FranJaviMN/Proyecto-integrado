@@ -2,15 +2,16 @@
 * BookMedik Database
 * @author Evilnapsis
 */
+drop database bookmedik;
 create database bookmedik;
 use bookmedik; 
 
 create table user (
 	id int not null auto_increment primary key,
 	username varchar(50) not null,
-	name varchar(50) not null,
-	lastname varchar(50) not null,
-	email varchar(255) not null,
+	name varchar(50),
+	lastname varchar(50),
+	email varchar(255),
 	password varchar(60) not null,
 	is_active boolean not null default 1,
 	is_admin boolean not null default 0,
