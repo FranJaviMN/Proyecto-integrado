@@ -282,7 +282,7 @@ Ahora que hemos visto como crear pods y la forma de poder agregar a estos distin
   vagrant@podman:~$ podman run -d --restart=always --pod=servidor-wp -e MYSQL_ROOT_PASSWORD="wp-password" -e MYSQL_DATABASE="wp" -e MYSQL_USER="wordpress" -e MYSQL_PASSWORD="user-password"  --name=mysql-wp mariadb
   
   #### Creamos por ultimo el contenedor con wordpress ####
-  vagrant@podman:~$ podman run -d --restart=always --name=mywordpress --pod=19b301d2965b -e WORDPRESS_DB_NAME="wp" -e WORDPRESS_DB_USER="wordpress" -e WORDPRESS_DB_PASSWORD="user-password" -e   WORDPRESS_DB_HOST="127.0.0.1" --name my-wordpress wordpress
+  vagrant@podman:~$ podman run -d --restart=always --name=mywordpress --pod=19b301d2965b -e WORDPRESS_DB_NAME="wp" -e WORDPRESS_DB_USER="wordpress" -e WORDPRESS_DB_PASSWORD="user-password" -e   WORDPRESS_DB_HOST="127.0.0.1" wordpress
   
   #### Comprobamos que tenemos 3 contenedores en un mismo pod, el contenedor infra, wordpress y mysql ####
   vagrant@podman:~$ podman ps -a --pod
@@ -311,3 +311,5 @@ Ahora que hemos visto como crear pods y la forma de poder agregar a estos distin
   ```shell
   #### Creamos un nuevo pod llamado bookmedik ####
   vagrant@podman:~$ podman pod create --name bookmedik -p 8081:80
+
+  #### Creamos la nueva imagen 
