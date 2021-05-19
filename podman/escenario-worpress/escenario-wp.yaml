@@ -1,0 +1,124 @@
+# Generation of Kubernetes YAML is still under development!
+#
+# Save the output of this file and use kubectl create -f to import
+# it into Kubernetes.
+#
+# Created with podman-3.0.1
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: "2021-05-19T06:48:59Z"
+  labels:
+    app: servidor-wp
+  name: servidor-wp
+spec:
+  containers:
+  - args:
+    - apache2-foreground
+    command:
+    - docker-entrypoint.sh
+    env:
+    - name: PATH
+      value: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+    - name: TERM
+      value: xterm
+    - name: container
+      value: podman
+    - name: PHP_EXTRA_BUILD_DEPS
+      value: apache2-dev
+    - name: APACHE_ENVVARS
+      value: /etc/apache2/envvars
+    - name: PHP_INI_DIR
+      value: /usr/local/etc/php
+    - name: PHPIZE_DEPS
+      value: "autoconf \t\tdpkg-dev \t\tfile \t\tg++ \t\tgcc \t\tlibc-dev \t\tmake \t\tpkg-config \t\tre2c"
+    - name: PHP_VERSION
+      value: 7.4.19
+    - name: PHP_EXTRA_CONFIGURE_ARGS
+      value: --with-apxs2 --disable-cgi
+    - name: WORDPRESS_DB_NAME
+      value: wp
+    - name: PHP_CPPFLAGS
+      value: -fstack-protector-strong -fpic -fpie -O2 -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64
+    - name: PHP_URL
+      value: https://www.php.net/distributions/php-7.4.19.tar.xz
+    - name: PHP_SHA256
+      value: 6c17172c4a411ccb694d9752de899bb63c72a0a3ebe5089116bc13658a1467b2
+    - name: GPG_KEYS
+      value: 42670A7FE4D0441C8E4632349E4FDC074A4EF02D 5A52880781F755608BF815FC910DEB46F53EA312
+    - name: APACHE_CONFDIR
+      value: /etc/apache2
+    - name: PHP_LDFLAGS
+      value: -Wl,-O1 -pie
+    - name: WORDPRESS_DB_PASSWORD
+      value: user-password
+    - name: PHP_CFLAGS
+      value: -fstack-protector-strong -fpic -fpie -O2 -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64
+    - name: WORDPRESS_DB_HOST
+      value: 127.0.0.1
+    - name: WORDPRESS_DB_USER
+      value: wordpress
+    - name: PHP_ASC_URL
+      value: https://www.php.net/distributions/php-7.4.19.tar.xz.asc
+    image: docker.io/library/wordpress:latest
+    name: my-wordpress
+    ports:
+    - containerPort: 80
+      hostPort: 8080
+      protocol: TCP
+    resources: {}
+    securityContext:
+      allowPrivilegeEscalation: true
+      capabilities:
+        drop:
+        - CAP_MKNOD
+        - CAP_NET_RAW
+        - CAP_AUDIT_WRITE
+      privileged: false
+      readOnlyRootFilesystem: false
+      seLinuxOptions: {}
+    workingDir: /var/www/html
+  - args:
+    - mysqld
+    command:
+    - docker-entrypoint.sh
+    env:
+    - name: PATH
+      value: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+    - name: TERM
+      value: xterm
+    - name: container
+      value: podman
+    - name: MARIADB_MAJOR
+      value: "10.5"
+    - name: MARIADB_VERSION
+      value: 1:10.5.10+maria~focal
+    - name: MYSQL_ROOT_PASSWORD
+      value: wp-password
+    - name: MYSQL_DATABASE
+      value: wp
+    - name: MYSQL_USER
+      value: wordpress
+    - name: MYSQL_PASSWORD
+      value: user-password
+    - name: GPG_KEYS
+      value: 177F4010FE56CA3336300305F1656F24C74CD1D8
+    - name: GOSU_VERSION
+      value: "1.12"
+    image: docker.io/library/mariadb:latest
+    name: mysql-wp
+    resources: {}
+    securityContext:
+      allowPrivilegeEscalation: true
+      capabilities:
+        drop:
+        - CAP_MKNOD
+        - CAP_NET_RAW
+        - CAP_AUDIT_WRITE
+      privileged: false
+      readOnlyRootFilesystem: false
+      seLinuxOptions: {}
+    workingDir: /
+  dnsConfig: {}
+  restartPolicy: Always
+status: {}

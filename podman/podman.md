@@ -253,7 +253,7 @@ CONTAINER ID  IMAGE                            COMMAND  CREATED             STAT
 
 Como vemos tenemos el nuevo contenedor en el pod, con un nombre aleatorio y se esta ejecutando el comando top, que nos muestra los procesos y carga de la maquina por lo que el contenedor se va a quedar levantado hasta que yo le diga lo contrario.
 
-En cambio si lanzamos un contenedor en el pod que solo ejecute un "ls" veremos que al instante el contenedor se para y ya no esta en funcionamiento porque los contenedores solo ejecutan un proceso, cuando este termina, el contenedor tambien:
+En cambio si lanzamos un contenedor en el pod que solo ejecute un "ls" veremos que al instante el contenedor se para y ya no esta en funcionamiento porque los contenedores solo ejecutan un proceso, cuando este termina, el contenedor se para ya que estos son efimeros:
 ```shell
 #### Creamos un contenedor con debian y ejecutamos "ls" ####
 vagrant@podman:~$ podman run -dt --pod b11f104a9e60 docker.io/library/debian:latest ls
@@ -268,3 +268,44 @@ CONTAINER ID  IMAGE                            COMMAND  CREATED             STAT
 ```
 
 Como vemos, se ha creado y al tiempo de terminar el proceso de ls, este contenedor se ha parado.
+
+### Creando escenarios con pods
+
+Ahora que hemos visto como crear pods y la forma de poder agregar a estos distintos contenedores que nosotros creemos, vamos a empezar a crear escenarios sencillos con pods y con algunos contenedores.
+
+* El primero ejemplo que vamos a hacer va a ser un clásico, un pod con dos contenedores, uno con un contenedores que contenga un wordpress y otro contenedor con la base de datos, en este caso va a ser una base de datos MySQL.
+  ```shell
+  #### Creamos el pod que tendra de nombre "servidor-wp" ####
+  vagrant@podman:~$ podman pod create --name servidor-wp -p 8080:80
+  
+  #### Una vez creado vamos a generar un contenedor que sera la base de datos ####
+  vagrant@podman:~$ podman run -d --restart=always --pod=servidor-wp -e MYSQL_ROOT_PASSWORD="wp-password" -e MYSQL_DATABASE="wp" -e MYSQL_USER="wordpress" -e MYSQL_PASSWORD="user-password"  --name=mysql-wp mariadb
+  
+  #### Creamos por ultimo el contenedor con wordpress ####
+  vagrant@podman:~$ podman run -d --restart=always --name=mywordpress --pod=19b301d2965b -e WORDPRESS_DB_NAME="wp" -e WORDPRESS_DB_USER="wordpress" -e WORDPRESS_DB_PASSWORD="user-password" -e   WORDPRESS_DB_HOST="127.0.0.1" --name my-wordpress wordpress
+  
+  #### Comprobamos que tenemos 3 contenedores en un mismo pod, el contenedor infra, wordpress y mysql ####
+  vagrant@podman:~$ podman ps -a --pod
+  CONTAINER ID  IMAGE                               COMMAND               CREATED        STATUS            PORTS                 NAMES                     POD ID        PODNAME
+  e86e5dd06397  k8s.gcr.io/pause:3.2                                      5 minutes ago  Up 5 minutes ago  0.0.0.0:8080->80/tcp  294226c2dbf3-infra        294226c2dbf3  servidor-wp
+  d0c06bdf6d54  docker.io/library/wordpress:latest  apache2-foregroun...  5 minutes ago  Up 5 minutes ago  0.0.0.0:8080->80/tcp  servidor-wp-my-wordpress  294226c2dbf3  servidor-wp
+  f51e666c6cce  docker.io/library/mariadb:latest    mysqld                5 minutes ago  Up 5 minutes ago  0.0.0.0:8080->80/tcp  servidor-wp-mysql-wp      294226c2dbf3  servidor-wp
+  ```
+
+  Como hemos visto en este ejemplo, hemos creado un pod con un escenario de una base de datos y un wordpress escuchando en el puerto 80, que ha sido redireccionado al puerto 8080 del pod, por lo  que, si queremos entrar en ese wordpress que hemos creado solo bastaria con averiguar la ip de la maquina donde se encuentra ese pod, en este caso la ip es **192.168.121.207** y en el navegador  entrar en esa ip pero en el puerto 8080:
+
+  ![Imagen wordpress pod](https://raw.githubusercontent.com/FranJaviMN/elementos-grado/main/Proyecto/captura-wp-podman.png)
+
+  Vemos que funciona perfectamente pero, ¿Y si quisieramos llevarnos este escenario a otro entorno de podman o un entorno de Kubernetes? Para ello podman tiene una funcion llamada **generate** el cual nos va a generar un fichero **.yaml** el cual se lo podemos pasar como parametro a podman o a kuberntes. Para generar este fichero .yaml podemos usar el siguiente comando:
+  ```shell
+  #### Generamos el fichero .yaml ####
+  vagrant@podman:~$ podman generate kube servidor-wp >> escenario-wp.yaml
+
+  #### Si queremos ejecutar este fichero con podman para que genere el escernario ####
+  vagrant@podman:~$ podman play kube ./escenario-wp.yaml
+  ```
+
+  Nos habra generado un [fichero como este]()
+
+  * En nuestro segundo ejemplo vamos a crear nuestra propia imagen haciendo uso de buildah y con ella vamos a crear, al igual que en el anterior ejemplo, un escenario con dos contenedores en un pod.
+  ```shell
