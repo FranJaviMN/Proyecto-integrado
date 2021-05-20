@@ -336,9 +336,3 @@ Ahora que hemos visto como crear pods y la forma de poder agregar a estos distin
   Una vez tengamos ya la base de datos entramos en **IP:8082** y como datos de acceso es usuario: admin y contraseña:admin y debemos de tener lo siguiente:
 
   ![imagen de bookmedik](https://raw.githubusercontent.com/FranJaviMN/elementos-grado/main/Proyecto/captura-bookmedik.podman.png)
-
-  Ahora que tenemos nuestro escenario preparado vamos a crear un fichero .yaml para que podamos desplegarlo rapidamente en otros escenarios, para ello lo que debemos de hacer es, tener nuestra imagen de bookmedik en un repositorio como puede ser en docker.io para asi poder descargarla:
-  ```shell
-  #### Generamos el fichero .yaml en Deploy ####
-  vagrant@podman:~/Proyecto-integrado/podman/escenario-bookmedik/Deploy$ podman generate kube bookmedik >> bookmedik.yaml
-  ```
