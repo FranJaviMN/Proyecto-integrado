@@ -336,3 +336,12 @@ Ahora que hemos visto como crear pods y la forma de poder agregar a estos distin
   Una vez tengamos ya la base de datos entramos en **IP:8082** y como datos de acceso es usuario: admin y contraseña:admin y debemos de tener lo siguiente:
 
   ![imagen de bookmedik](https://raw.githubusercontent.com/FranJaviMN/elementos-grado/main/Proyecto/captura-bookmedik.podman.png)
+
+
+## Podman-compose
+
+Al igual que con los contenedores Docker tenemos la herramienta de **docker-compose** que nos permite desplegar escenarios de contenedores mediante un fichero .yaml, todo lo relacionado con docker-compose lo tengo explicado en una [entrada de mi Blog](https://franjavimn.onrender.com/implantacion/docker-compose/).
+
+Pues con los contenedores podman tenemos la misma herramienta que con Docker pero de nombre **podman-compose** que, al igual que **docker-compose**. no permite desplegar escenarios desde un fichero .yaml lo cual es muy interesante pero esta herramienta es un poco distinta a la hora de desplegar los escenarios ya que esta usa la utilidad de podman de crear pods con varios contenedores por lo que, al usar podman-compose estamos generando un pod con distintos contenedores en su interior.
+
+Podman-compose es un proyecto que es definido por sus propios desarrolladores como **un script para usar ficheros docker-compose.yml con podman**. C
