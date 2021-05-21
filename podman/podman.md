@@ -308,6 +308,28 @@ Ahora que hemos visto como crear pods y la forma de poder agregar a estos distin
   Nos habra generado un [fichero como este](https://github.com/FranJaviMN/Proyecto-integrado/blob/main/podman/escenario-worpress/escenario-wp.yaml)
 
   * En nuestro segundo ejemplo vamos a crear nuestra propia imagen haciendo uso de buildah y con ella vamos a crear, al igual que en el anterior ejemplo, un escenario con dos contenedores en un pod.
+
+  Para ello vamos a hacer uso del siguiente fichero **Dockerfile** el cual vamos a usar con buildah para generar la imagen:
+  ```dockerfile
+  FROM debian
+
+  RUN apt-get update && apt-get install -y apache2 libapache2-mod-php7.3 php7.3 php7.3-mysql && apt-get clean && rm -rf /var/lib/apt/lists/*
+  RUN rm /var/www/html/index.html
+
+  ENV APACHE_SERVER_NAME=www.bookmedik-francisco.org
+  ENV DATABASE_USER=bookmedik
+  ENV DATABASE_PASSWORD=bookmedik
+  ENV DATABASE_HOST=127.0.0.1
+
+  EXPOSE 80
+
+  COPY ./bookmedik /var/www/html
+  ADD script.sh /usr/local/bin/script.sh
+
+  RUN chmod +x /usr/local/bin/script.sh
+
+  CMD ["/usr/local/bin/script.sh"]
+  ```
   ```shell
   #### Creamos un nuevo pod llamado bookmedik ####
   vagrant@podman:~$ podman pod create --name bookmedik -p 8082:80
@@ -344,4 +366,125 @@ Al igual que con los contenedores Docker tenemos la herramienta de **docker-comp
 
 Pues con los contenedores podman tenemos la misma herramienta que con Docker pero de nombre **podman-compose** que, al igual que **docker-compose**. no permite desplegar escenarios desde un fichero .yaml lo cual es muy interesante pero esta herramienta es un poco distinta a la hora de desplegar los escenarios ya que esta usa la utilidad de podman de crear pods con varios contenedores por lo que, al usar podman-compose estamos generando un pod con distintos contenedores en su interior.
 
-Podman-compose es un proyecto que es definido por sus propios desarrolladores como **un script para usar ficheros docker-compose.yml con podman**. C
+Podman-compose es un proyecto que es definido por sus propios desarrolladores como **un script para usar ficheros docker-compose.yml con podman**. La instalación se puede hacer de distintas maneras y podemos ver las distintas formas de instalar este herramienta en multiples distribuciones de linux, asi bien, yo lo instalare en una maquina con Debian 10, lo podemos ver [aqui](https://github.com/containers/podman-compose):
+```shell
+#### En una maquina Debian 10 instalamos lass herramientas para manejar paquetes python ####
+vagrant@podman:~$ sudo apt install python3-pip
+
+#### Una vez instalados, instalamos las dependencias de podman-compose ####
+vagrant@podman:~$ pip3 install pyaml
+Collecting pyaml
+
+#### Instalamos desde los repositorios de git el paquete de podman-compose ####
+vagrant@podman:~$ pip3 install https://github.com/containers/podman-compose/archive/devel.tar.gz
+```
+
+Una vez tengamos hecho esto solo debemos de empezar a crear ficheros docker-compose para ejecutarlos con nuestra herramienta de **podman-compose**. Ademas de que esta herramienta es uy util, tambien tenemos una ayuda muy completa a nuestro alcance, para ello solo debemos de seguir los pasos siguientes:
+```shell
+vagrant@podman:~/.local/bin$ ./podman-compose --help
+usage: podman-compose [-h] [-f file] [-p PROJECT_NAME]
+                      [--podman-path PODMAN_PATH] [--podman-args args]
+                      [--podman-pull-args args] [--podman-push-args args]
+                      [--podman-build-args args] [--podman-inspect-args args]
+                      [--podman-run-args args] [--podman-start-args args]
+                      [--podman-stop-args args] [--podman-rm-args args]
+                      [--podman-volume-args args] [--no-ansi] [--no-cleanup]
+                      [--dry-run]
+                      [-t {1pod,1podfw,hostnet,cntnet,publishall,identity}]
+                      {help,version,pull,push,build,up,down,ps,run,exec,start,stop,restart,logs}
+                      ...
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -f file, --file file  Specify an alternate compose file (default: docker-
+                        compose.yml)
+  -p PROJECT_NAME, --project-name PROJECT_NAME
+                        Specify an alternate project name (default: directory
+                        name)
+  --podman-path PODMAN_PATH
+                        Specify an alternate path to podman (default: use
+                        location in $PATH variable)
+  --podman-args args    custom global arguments to be passed to `podman`
+  --podman-pull-args args
+                        custom arguments to be passed to `podman pull`
+  --podman-push-args args
+                        custom arguments to be passed to `podman push`
+  --podman-build-args args
+                        custom arguments to be passed to `podman build`
+  --podman-inspect-args args
+                        custom arguments to be passed to `podman inspect`
+  --podman-run-args args
+                        custom arguments to be passed to `podman run`
+  --podman-start-args args
+                        custom arguments to be passed to `podman start`
+  --podman-stop-args args
+                        custom arguments to be passed to `podman stop`
+  --podman-rm-args args
+                        custom arguments to be passed to `podman rm`
+  --podman-volume-args args
+                        custom arguments to be passed to `podman volume`
+  --no-ansi             Do not print ANSI control characters
+  --no-cleanup          Do not stop and remove existing pod & containers
+  --dry-run             No action; perform a simulation of commands
+  -t {1pod,1podfw,hostnet,cntnet,publishall,identity}, --transform_policy {1pod,1podfw,hostnet,cntnet,publishall,identity}
+                        how to translate docker compose to podman
+                        [1pod|hostnet|accurate]
+
+command:
+  {help,version,pull,push,build,up,down,ps,run,exec,start,stop,restart,logs}
+    help                show help
+    version             show version
+    pull                pull stack images
+    push                push stack images
+    build               build stack images
+    up                  Create and start the entire stack or some of its
+                        services
+    down                tear down entire stack
+    ps                  show status of containers
+    run                 create a container similar to a service to run a one-
+                        off command
+    exec                execute a command in a running container
+    start               start specific services
+    stop                stop specific services
+    restart             restart specific services
+    logs                show logs from services
+```
+
+Para usar la herramienta solo debemos de tener un fichero llamado **docker-compose.yml**. Para ello vamos a usar como prueba el siguiente:
+```dockerfile
+version: "3.8"
+
+services: 
+
+  wordpress:
+    #Nomber del contenedor
+    container_name: servidor_wp
+
+    #Imagen que vamos a usar
+    image: wordpress
+
+    #Indicamos la política de reinicio del contenedor si por cualquier condición se para
+    restart: always
+
+    #Definimos las variables de entorno que nos ofrecen en la documentacion de wordpress
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: user_wp
+      WORDPRESS_DB_PASSWORD: asdasd
+      WORDPRESS_DB_NAME: bd_wp
+
+    #Puertos que vamos a exponer de nuestra maquina y el contenedor  
+    ports:
+      - 8080:80
+
+  db:
+    container_name: servidor_mysql
+    image: mariadb
+    restart: always
+    environment:
+      MYSQL_DATABASE: bd_wp
+      MYSQL_USER: user_wp
+      MYSQL_PASSWORD: asdasd
+      MYSQL_ROOT_PASSWORD: asdasd
+```
+
