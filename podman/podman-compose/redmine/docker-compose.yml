@@ -6,15 +6,15 @@ services:
     image: redmine
     restart: always
     ports:
-      - 8080:3000
+      - 8080:8080
     environment:
       REDMINE_DB_MYSQL: db
-      REDMINE_DB_PASSWORD: example
+      REDMINE_DB_PASSWORD: passwd1234
       REDMINE_SECRET_KEY_BASE: supersecretkey
 
   db:
     image: mysql:5.7
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: example
+      MYSQL_ROOT_PASSWORD: passwd1234
       MYSQL_DATABASE: redmine
