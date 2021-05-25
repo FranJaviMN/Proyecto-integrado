@@ -3,7 +3,7 @@ kversion: '3.1'
 services:
 
   redmine:
-    image: redmine
+    image: redmine:latest
     restart: always
     ports:
       - 8080:8080
@@ -13,7 +13,7 @@ services:
       REDMINE_SECRET_KEY_BASE: supersecretkey
 
   db:
-    image: mysql:5.7
+    image: mysql:latest
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: passwd1234
