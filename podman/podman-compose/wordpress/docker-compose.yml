@@ -1,0 +1,36 @@
+version: "3.8"
+
+services:
+
+  wordpress:
+    #Nomber del contenedor
+    container_name: servidor_wp
+
+    #Imagen que vamos a usar
+    image: wordpress
+
+    #Indicamos la política de reinicio del contenedor si por cualquier condición se para
+    restart: always
+
+    #Definimos las variables de entorno que nos ofrecen en la documentacion de wordpress
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: user_wp
+      WORDPRESS_DB_PASSWORD: asdasd
+      WORDPRESS_DB_NAME: bd_wp
+
+    #Puertos que vamos a exponer de nuestra maquina y el contenedor  
+    ports:
+      - 8080:80
+
+  db:
+    container_name: servidor_mysql
+    image: mariadb
+    restart: always
+    environment:
+      MYSQL_DATABASE: bd_wp
+      MYSQL_USER: user_wp
+      MYSQL_PASSWORD: asdasd
+      MYSQL_ROOT_PASSWORD: asdasd
+
+

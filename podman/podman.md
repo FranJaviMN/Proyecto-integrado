@@ -488,3 +488,32 @@ services:
       MYSQL_ROOT_PASSWORD: asdasd
 ```
 
+Tras esto solo debemos de ejecutar el script de **podman-compose** para que lea el fichero y cree el escenario mediante este. Si vemos un poco mas detenidamente las opciones que nos ofrece este script, veremos que podemos indicarle mediante el la opción *-t* que nos va a permitir indicarle como queremos pasar el fichero de **Docker-compose** a podman y podemosdecirle que lo cree todo en un mismo pod con el parametro **1podfw**, asi, usando el siguiente comando vamos a generar el escenario:
+```shell
+#### Ejecutamos el script de podman-compose ####
+vagrant@podman:~/.local/bin$ ./podman-compose -t 1podfw -p wp_compose -f /home/vagrant/Proyecto-integrado/podman/podman-compose/docker-compose.yml up 
+
+Indicando:
+  -t: Forma de interpretar el fichero docker-compose, en este caso, crear un solo pod
+  -p: Nombre del proyecto, es decir, del pod que vamos a crear
+  -f: Le indicamos la ruta del fichero de docker-compose
+  up: Indicamos que levante el escenario
+```
+
+Tambien podemos usar la opcion llamada **--dry-run** que nos muestra por pantalla los comandos que usa podman-compose para la creación del escenario a partir del fichero de docker-compose como podemos ver en el siguiente ejemplo:
+```shell
+#### Ejecutamos el script de podman-compose ####
+vagrant@podman:~/.local/bin$ ./podman-compose -t 1podfw -p wp_compose --dry-run -f /home/vagrant/Proyecto-integrado/podman/podman-compose/docker-compose.yml up 
+
+#### Vemos como nos da los comando para la creación del escenario a mano ####
+# POD
+podman pod create --name=wp_compose --share net -p 8080:80
+
+# Wordpress
+podman create --name=servidor_wp --pod=wp_compose --label io.podman.compose.config-hash=123 --label io.podman.compose.project=wp_compose --label io.podman.compose.version=0.0.1 --label com.docker.compose.project=wp_compose --label com.docker.compose.project.working_dir=/home/vagrant/Proyecto-integrado/podman/podman-compose --label com.docker.compose.project.config_files=/home/vagrant/Proyecto-integrado/podman/podman-compose/docker-compose.yml --label com.docker.compose.container-number=1 --label com.docker.compose.service=wordpress -e WORDPRESS_DB_HOST=db -e WORDPRESS_DB_USER=user_wp -e WORDPRESS_DB_PASSWORD=asdasd -e WORDPRESS_DB_NAME=bd_wp --add-host wordpress:127.0.0.1 --add-host servidor_wp:127.0.0.1 --add-host db:127.0.0.1 --add-host servidor_mysql:127.0.0.1 --restart always wordpress
+
+# MySQL
+podman create --name=servidor_mysql --pod=wp_compose --label io.podman.compose.config-hash=123 --label io.podman.compose.project=wp_compose --label io.podman.compose.version=0.0.1 --label com.docker.compose.project=wp_compose --label com.docker.compose.project.working_dir=/home/vagrant/Proyecto-integrado/podman/podman-compose --label com.docker.compose.project.config_files=/home/vagrant/Proyecto-integrado/podman/podman-compose/docker-compose.yml --label com.docker.compose.container-number=1 --label com.docker.compose.service=db -e MYSQL_DATABASE=bd_wp -e MYSQL_USER=user_wp -e MYSQL_PASSWORD=asdasd -e MYSQL_ROOT_PASSWORD=asdasd --add-host wordpress:127.0.0.1 --add-host servidor_wp:127.0.0.1 --add-host db:127.0.0.1 --add-host servidor_mysql:127.0.0.1 --restart always mariadb
+```
+
+En la carpeta del repositorio llamada **podman-compose** hay mas ficheros de ejemplo para montra escenarios con podman-compose.
