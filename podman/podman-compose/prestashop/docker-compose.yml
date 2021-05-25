@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  prestashop_db:
+    image: mariadb
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=prestashop
+  prestashop:
+    image: 'prestashop/prestashop:1.7'
+    environment:
+      - PS_DEV_MODE=1
+      - DB_SERVER=prestashop_db
+      - DB_USER=root
+      - DB_PASSWD=root
+      - DB_NAME=prestashop
+      - PS_INSTALL_AUTO=0
+    ports:
+      - '8082:80'
+      - '8443:443'
+    links:
+      - prestashop_db:prestashop_db
+    depends_on:
+      - prestashop_db
