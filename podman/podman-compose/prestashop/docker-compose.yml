@@ -8,7 +8,7 @@ services:
       - MYSQL_ROOT_PASSWORD=root
       - MYSQL_DATABASE=prestashop
   prestashop:
-    image: 'prestashop/prestashop:1.7'
+    image: 'prestashop/prestashop'
     environment:
       - PS_DEV_MODE=1
       - DB_SERVER=prestashop_db
