@@ -1,4 +1,4 @@
-Para este escenario podemos seguir la documentación sobre la imagen que estamos usando, en este caso usamos la imagen de prestashop y mariadb.
+Para este escenario podemos seguir la documentación sobre la imagen que estamos usando, en este caso usamos la imagen de nextcloud y mariadb.
 
 Podemos ver mas parametros y variables a configurar en la documentacion:
 * Mariadb: [documentación de la imagen](https://hub.docker.com/_/mariadb)
