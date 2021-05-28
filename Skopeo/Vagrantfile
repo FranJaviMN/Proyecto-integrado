@@ -1,0 +1,14 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |skopeo|
+  skopeo.vm.box = "generic/debian10"
+  skopeo.vm.hostname = "skopeo"
+  skopeo.vm.synced_folder ".", "/vagrant", disabled: true
+  skopeo.vm.provider :libvirt do |libvirt|
+    libvirt.uri = 'qemu+unix:///system'
+    libvirt.host = "skopeo"
+    libvirt.cpus = 1
+    libvirt.memory = 1024
+  end
+end
