@@ -305,7 +305,7 @@ Ahora que hemos visto como crear pods y la forma de poder agregar a estos distin
   vagrant@podman:~$ podman play kube ./escenario-wp.yaml
   ```
 
-  Nos habra generado un [fichero como este](https://github.com/FranJaviMN/Proyecto-integrado/blob/main/podman/escenario-worpress/escenario-wp.yaml)
+  Nos habra generado un [fichero como este](https://github.com/FranJaviMN/Proyecto-integrado/blob/main/Podman/escenario-worpress/escenario-wp.yaml)
 
   * En nuestro segundo ejemplo vamos a crear nuestra propia imagen haciendo uso de buildah y con ella vamos a crear, al igual que en el anterior ejemplo, un escenario con dos contenedores en un pod.
 
@@ -350,7 +350,7 @@ Ahora que hemos visto como crear pods y la forma de poder agregar a estos distin
   093135c6f6bf  localhost/bookmedik-podman        /usr/local/bin/sc...  2 hours ago  Up 2 hours ago  0.0.0.0:8082->80/tcp  bookmedik-app       aed61cb395da  bookmedik
   557d0f451949  docker.io/library/mariadb:latest  mysqld                2 hours ago  Up 2 hours ago  0.0.0.0:8082->80/tcp  mysql-bookmedik     aed61cb395da  bookmedik
   ```
-  Una vez hayamos creado el pod con los 3 contenedores necesitamos cargar en la base de datos de nuestro contenendor **mysql-bookmedik** los datos para poder usar la app de bookmedik, para ello debemos de cargar el [fichero siguiente](https://github.com/FranJaviMN/Proyecto-integrado/blob/main/podman/escenario-bookmedik/Build/bookmedik/schema.sql) en la base de datos.
+  Una vez hayamos creado el pod con los 3 contenedores necesitamos cargar en la base de datos de nuestro contenendor **mysql-bookmedik** los datos para poder usar la app de bookmedik, para ello debemos de cargar el [fichero siguiente](https://github.com/FranJaviMN/Proyecto-integrado/blob/main/Podman/escenario-bookmedik/Build/bookmedik/schema.sql) en la base de datos.
   ```shell
   #### Cargamos el fichero .sql en la base de datos de nuestro contenedor mysql-bookmedik ####
   vagrant@podman:~$ cat schema.sql | podman exec -i mysql-bookmedik /usr/bin/mysql -u root --password=franciscojavier bookmedik
